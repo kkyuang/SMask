@@ -1,9 +1,3 @@
 # SMask
-# SMask
-# SMask
-# SMask
-# SMask
-# SMask
-# SMask
-# SMask
-# SMask
+
+경남과학고등학교 40기 해커톤 행사에서 제작된 수학/과학 질문 웹사이트 SMask입니다.
