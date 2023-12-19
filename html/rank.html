@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/jquery-ui.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="http://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
+    <title>2021 거창덕유중학교 고사성어 외우기</title>
+    <meta name="title" content="2021 거창덕유중학교 고사성어 외우기">
+    <meta name="author" content="뀨앙지윤">
+    <link rel="stylesheet" href="/css/style.css">
+    <meta property="og:title" content="2021 거창덕유중학교 고사성어 외우기" />
+    <meta property="og:description" content="고사성어를 쉽게 외울 수 있는 웹사이트입니다 :)" />
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-X8WKB5KSJG');
+    </script>
+    <script>
+        $(function () {
+            var effectList = {
+                '.main-btn': [
+                    '#556070',
+                    'white',
+                    'white',
+                    'black'
+                ]
+            }
+            for (var i = 0; i < Object.keys(effectList).length; i++) {
+                var eff = effectList[Object.keys(effectList)[i]]
+                mkMouseAni(Object.keys(effectList)[i], eff)
+            }
+            function mkMouseAni(key, effect) {
+                $(key).mouseenter(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[0],
+                        color: eft[1]
+                    }, 200)
+                });
+                $(key).mouseleave(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[2],
+                        color: eft[3]
+                    }, 200)
+                });
+                $(key).click(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[2],
+                        color: eft[3]
+                    }, 200)
+                });
+            }
+        })
+    </script>
+</head>
+
+<body class="no-drag">
+    <nav class="top-nav-bar">
+        <a class="navbar-brand" href="/">2021 거창덕유중학교 고사성어 외우기</a>
+        <a class="navbar-brand" style="color: #808080" href="https://www.youtube.com/channel/UC4xXYnoB9kFnxdUPG_Hcy7A">Made by 전지윤</a>
+    </nav>
+    <div id="main-div" class="pannel">
+        <h1 class="title" style="font-size: 42px; height: 2em; margin-top: 1.5em;">랭킹</h1>
+        <h3 class="title">개발자의 귀찮음으로 인해 무산되었습니다.<br><br>죄송합니다</h3>
+    </div>
+</body>
+
+</html>

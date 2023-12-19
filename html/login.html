@@ -1,0 +1,112 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/jquery-ui.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="http://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
+    <title>ROLLING NOVELS</title>
+    <meta name="title" content="ROLLING NOVELS">
+    <meta name="author" content="뀨앙지윤">
+    <link rel="stylesheet" href="/css/style.css">
+    <meta property="og:title" content="ROLLING NOVELS" />
+    <meta property="og:description" content="여러분이 가꾸어 나가는 소설, ROLLING NOVELS" />
+    <script>
+        $(function () {
+            var effectList = {
+                '.main-btn': [
+                    '#556070',
+                    'white',
+                    'white',
+                    'black'
+                ]
+            }
+            for (var i = 0; i < Object.keys(effectList).length; i++) {
+                var eff = effectList[Object.keys(effectList)[i]]
+                mkMouseAni(Object.keys(effectList)[i], eff)
+            }
+            function mkMouseAni(key, effect) {
+                $(key).mouseenter(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[0],
+                        color: eft[1]
+                    }, 200)
+                });
+                $(key).mouseleave(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[2],
+                        color: eft[3]
+                    }, 200)
+                });
+                $(key).click(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[2],
+                        color: eft[3]
+                    }, 200)
+                });
+            }
+        })
+
+        function blankCheck(text, alertmsg) {
+            if (text == '' || text == null) {
+                alert(alertmsg);
+                return false;
+            }
+            var blank_pattern = /^\s+|\s+$/g;
+            if (text.replace(blank_pattern, '') == "") {
+                alert(alertmsg);
+                return false;
+            }
+            return true
+        }
+
+        //데이터 체크
+        function checkData(id, pw) {
+            if (!blankCheck(id, '닉네임을 입력해 주세요')) {
+                return false
+            }
+            if (!blankCheck(pw, '비밀번호를 입력해 주세요')) {
+                return false
+            }
+            return true
+        }
+
+        $(document).ready(() => {
+            $("#signup-btn").click(() => {
+                if(checkData($("#signup-nickname-input").val(), $("#signup-password-input").val())){
+                    $("#signup-form").submit()
+                }
+            })
+            $("#login-btn").click(() => {
+                if(checkData($("#login-nickname-input").val(), $("#login-password-input").val())){
+                    $("#login-form").submit()
+                }
+            })
+        })
+    </script>
+</head>
+
+<body class="no-drag">
+    ${top-nav-bar}
+    <div id="main-div" class="pannel-main" style="text-align: center;">
+        <h1 class="title" style="height: 2em; margin-top: 1em; margin-bottom:0em; font-family: 'Apple Garamond Light', serif; font-weight:lighter;">SIGN IN/SIGN UP</h1>
+        <div class="login-form" >
+            <form action="/login" method="post" id="login-form" style="margin-bottom: 0;">
+                <input type="text" placeholder="닉네임" id="login-nickname-input" name="id">
+                <input type="password" style="margin-top: 5px;" placeholder="패스워드" id="login-password-input"
+                    name="password">
+            </form>
+            <button id="login-btn" class="main-btn" style="margin-top: 5px;">로그인</button>
+            <form action="/signup" method="post" id="signup-form" style="margin-bottom: 0;">
+                <input type="text" placeholder="닉네임" id="signup-nickname-input" name="id">
+                <input type="password" style="margin-top: 5px;" placeholder="패스워드" id="signup-password-input"
+                    name="password">
+            </form>
+            <button id="signup-btn" class="main-btn" style="margin-top: 5px;  margin-bottom: 32px;">회원가입 ←</button>
+        </div>
+    </div>
+</body>
+
+</html>

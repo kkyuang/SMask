@@ -1,0 +1,139 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.ui/1.12.1/jquery-ui.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="http://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <title>ROLLING NOVELS</title>
+    <meta name="title" content="ROLLING NOVELS">
+    <meta name="author" content="뀨앙지윤">
+    <link rel="stylesheet" href="/css/style.css">
+    <meta property="og:title" content="ROLLING NOVELS" />
+    <meta property="og:description" content="여러분이 가꾸어 나가는 소설, ROLLING NOVELS" />
+    <script>
+
+        function blankCheck(text, alertmsg) {
+            if (text == '' || text == null) {
+                if (alertmsg != "") {
+                    alert(alertmsg);
+                }
+                return false;
+            }
+            var blank_pattern = /^\s+|\s+$/g;
+            if (text.replace(blank_pattern, '') == "") {
+                if (alertmsg != "") {
+                    alert(alertmsg);
+                }
+                return false;
+            }
+            return true
+        }
+        /*function checkData(title, text) {
+            if (!blankCheck(title, '제목을 입력해 주세요.')) {
+                return false
+            }
+            if (!blankCheck(text, '내용을 입력해 주세요.')) {
+                return false
+            }
+            return true
+        }*/
+        $(function () {
+            var socket = io();
+            var effectList = {
+                '.main-btn': [
+                    '#556070',
+                    'white',
+                    'white',
+                    'black'
+                ],
+                '.book-surface': [
+                    '#556070',
+                    'white',
+                    'white',
+                    'black'
+                ]
+            }
+            for (var i = 0; i < Object.keys(effectList).length; i++) {
+                var eff = effectList[Object.keys(effectList)[i]]
+                mkMouseAni(Object.keys(effectList)[i], eff)
+            }
+            function mkMouseAni(key, effect) {
+                $(key).mouseenter(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[0],
+                        color: eft[1]
+                    }, 200)
+                });
+                $(key).mouseleave(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[2],
+                        color: eft[3]
+                    }, 200)
+                });
+                $(key).click(function (e, eft = effect) {
+                    $(this).animate({
+                        backgroundColor: eft[2],
+                        color: eft[3]
+                    }, 200)
+                });
+            }
+
+            $("#add-btn").click(() => { //이어쓰기
+                location.href = '/novel/view/add/${novel-id}'
+            })
+            
+            //이어쓰기 작성중 알림
+            socket.on('writing${novel-id}', (data) => {
+                $('#add-btn').html(data + '님이 작성중입니다 :)')
+                $('#add-btn').prop('disabled', true)
+            })
+            
+            //이어쓰기 작성 종료 알림
+            socket.on('endwriting${novel-id}', (data) => {
+                $('#add-btn').html('이어쓰기 ✍️')
+                $('#add-btn').prop('disabled', false)
+            })
+
+            function adjustHeight() {
+                var textEle = $('textarea.autosize');
+                textEle[0].style.height = 'auto';
+                var textEleHeight = textEle.prop('scrollHeight');
+                textEle.css('height', textEleHeight);
+            };
+
+            $('.autosize').on('keyup, keydown', () => {
+                adjustHeight()
+            })
+
+
+        })
+
+
+    </script>
+</head>
+
+<body class="no-drag">
+    ${top-nav-bar}
+    <div id="main-div" class="pannel-main" style="padding-bottom: 32px;">
+        <h1 class="title"
+            style="display: block; height: 48px; margin-top: 0; margin-bottom: 0; font-family: 'Apple Garamond Light', serif; font-weight:lighter;">
+            ${novel-title}</h1>
+        <form method="post" id="new-novel-form" style="margin-bottom: 0;">
+            <div id="text-input" class="textview" style="text-align: left;"
+                class="autosize"><span class="can-drag">${novel-text}</span></div>
+        </form>
+
+        <button id="add-btn" class="main-btn" style="margin-top: 5px; margin-bottom: 5px;">이어쓰기 ✍️</button>
+        <button id="stack-btn" class="main-btn" style="margin-top: 5px; margin-bottom: 5px;">토막 보기 👀</button>
+
+        <div id="text-input" class="textview" style="text-align: left; min-height: 0;"><span class="can-drag"></span>${people-text}</span></div>
+
+        
+    </div>
+</body>
+
+</html>

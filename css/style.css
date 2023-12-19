@@ -1,0 +1,464 @@
+@font-face {
+    font-family: 'NEXON Lv1 Gothic OTF Light';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-04@2.1/NEXON Lv1 Gothic OTF Light.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Apple Garamond Light';
+    src: url('/font/AppleGaramond-Light.ttf') format('ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.main-btn{
+    width: 50%;
+    height: 2em;
+    font-size: 1.5em;
+    color:black;
+    border-radius: 1em;
+    border-color: #556070;
+    background-color: #ffffff;
+    padding: auto;
+    margin-top: 32px;
+}
+
+.book-surface{
+    width: calc(25% - 36px);
+    height: calc(25vw);
+    font-size: 1.5em;
+    color:black;
+    border-radius: 1em;
+    border-color: #556070;
+    background-color: #ffffff;
+    padding: auto;
+    margin: 16px;
+    text-align: center;
+}
+
+.book-list{
+    width: calc(100% - 32px);
+    height: auto;
+    /*min-height: calc(100% - 80px - 32px);*/
+    background-color: #ffffff;
+    border-radius: 10px;
+    text-align: left;
+    padding: 16px;
+    margin-bottom: 4.375vh;
+}
+
+.list-btn{
+    width: 50%;
+    height: 2em;
+    font-size: 1.5em;
+    color:black;
+    border-radius: 1em;
+    border-color: #556070;
+    background-color: #ffffff;
+    padding: auto;
+    margin-top: 5px;
+}
+
+input{
+    width: 50%;
+    height: 2em;
+    font-size: 1em;
+    color:black;
+    border-radius: 1em;
+    border-color: #556070;
+    padding: auto;
+    margin-top: 32px;
+    padding: 5px;
+}
+
+textarea{
+    width: 50%;
+    font-size: 1em;
+    min-height: 20em;
+    height: auto;
+    color:black;
+    border-radius: 1em;
+    border-color: #556070;
+    padding: auto;
+    margin-top: 32px;
+    margin-bottom: 32px;
+    padding: 5px;
+    resize: vertical;
+    overflow-y:auto;
+}
+
+.textview{
+    width: calc(50% - 20px);
+    font-size: 1em;
+    min-height: 10em;
+    height: auto;
+    color:black;
+    background-color: #eeeeee;
+    border-radius: 1em;
+    border-color: #556070;
+    padding: 10px;
+    margin: auto;
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
+
+h1{
+    font-size: 42px;
+}
+
+body{
+    font-family: 'nexon', sans-serif;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background-color: #eeeeee;
+}
+.pannel-main{
+    margin: 4.375vh;
+    margin-top: 5.5vh;
+    margin-bottom: 4.375vh;
+    background-color: #ffffff;
+    min-height: calc(90% - 32px);
+    height: auto;
+    width: calc(100% - 8.75vh);
+    border-radius: 10px;
+    text-align: center;
+    display: block;
+    padding-top: 32px;
+}
+
+.pannel-login{
+    margin: 4.375vh;
+    margin-top: 5.5vh;
+    margin-bottom: 4.375vh;
+    background-color: #ffffff;
+    min-height: calc(90% - 32px);
+    height: auto;
+    width: calc(100% - 8.75vh);
+    border-radius: 10px;
+    text-align: center;
+    display: block;
+    padding-top: 32px;
+}
+
+.pannel{
+    position: absolute;
+    top: 51.25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    height: 90%;
+    width: calc(100% - 8.75vh);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.title{
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+
+button{
+    background-color:white;
+    border: solid black 1px;
+    border-radius: 1em;
+    padding: 2px;
+    text-align: center;
+}
+
+div.book-surface-div{
+    width: calc(25% - 36px);
+    height: calc(25vw);
+    font-size: 1.5em;
+    color:black;
+    border-color: #556070;
+    background-color: #ffffff;
+    padding: auto;
+    margin: 16px;
+    text-align: center;
+    display: inline-block;
+}
+
+button.book-surface-btn{
+    width: 100%;
+    height: calc(75% - 5px);
+    font-size: 1em;
+    color:black;
+    border-radius: 32px;
+    border-color: #556070;
+    background-color: #ffffff;
+    padding: auto;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+button.delete-btn{
+    width: 100%;
+    height: 25%;
+    font-size: 1em;
+    color:black;
+    border-radius: 32px;
+    border-color: #556070;
+    background-color: #ffffff;
+    padding: auto;
+    text-align: center;
+}
+
+.no-drag {
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    user-select:none;
+}
+
+.can-drag {
+    -ms-user-select: text;
+    -moz-user-select: text;
+    -webkit-user-select: text;
+    -khtml-user-select: text;
+    user-select:text;
+}
+
+#main-img{
+    height: calc(90% - (78px * 2) - 32px);
+}
+
+.navbar-brand{
+    width: auto;
+}
+
+#back-btn{
+    border:none;
+    float: left;
+    font-size: 1em;
+}
+
+.progress-text{
+    float: right;
+}
+
+#up{
+    height:2em;
+}
+
+.top-bar{
+    width: 80%;
+    height: auto;
+    margin: 0 auto;
+    margin-top: 2em;
+}
+
+.progress-bar{
+    width: 100%;
+    height: 1.5em;
+    background-color: #eeeeee;
+    border-radius: 0.75em;
+    margin-bottom: 5px;
+}
+
+.progress-bar-finished{
+    width: 0%;
+    height: 1.5em;
+    background-color: #cccccc;
+    border-radius: 0.75em;
+}
+
+#question-img{
+    width: 80%;
+}
+
+.question-text{
+    width: calc(80% - 20px);
+    padding: 10px;
+    margin: 2em auto;
+    margin-top: 1em;
+    font-size: 1em;
+    background-color: #cccccc;
+    border-radius: 1em;
+}
+
+.answer-btn{
+    margin: 0.5em auto;
+    padding: 10px;
+    display: block;
+    font-size: 1em;
+    width: calc(80%);
+    background-color: #eeeeee;
+    border: none;
+}
+
+#result-text{
+    width: calc(80% - 20px);
+    padding: 10px;
+    margin: 2em auto;
+    margin-top: 1.5em;
+    font-size: 0.8em;
+    background-color: #eeeeee;
+    border-radius: 1em;
+    display: block;
+    text-align: left;
+    line-height: 150%;
+    word-break: keep-all;
+}
+
+.retry-btn{
+    width: 50%;
+    height: 2em;
+    font-size: 1.5em;
+    border-radius: 1em;
+    padding: auto; 
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    font-family: 'Gaegu', cursive;
+}
+
+.share-btn{
+    width: 50%;
+    height: 2em;
+    font-size: 1.5em;
+    border-radius: 1em;
+    padding: auto;
+    margin-bottom: 10px;
+    font-family: 'Gaegu', cursive;
+}
+
+button{
+    font-weight: lighter;
+}
+
+.part{
+    width: calc(50% - 5px);
+    height: auto;
+    display: inline-block;
+    text-align: center;
+}
+
+.compatibility{
+    width: calc(80% - 20px);
+    padding: 10px;
+    margin: 2em auto;
+    margin-top: 1em;
+    font-size: 1em;
+    --parentHeight: 5em;
+    height: auto;
+    background-color: #eeeeee;
+    border-radius: 1em;
+    display: block;
+    text-align: left;
+}
+
+.compatibility-text{
+    width: 50%;
+    margin: 1em 0;
+    padding: 0 10px;
+    height: 3em;
+    display: block;
+}
+
+#result-img{
+    width: 30%;
+}
+
+.top-nav-bar{ 
+    height: auto;
+    width: calc((100% - 8.75vh) / 2);
+    top: 3.25%;
+    left: calc(25% + 2.1875vh);
+    transform: translate(-50%, -50%);
+    position: absolute;
+    vertical-align: left
+    ;
+}
+
+#top-nav-right{
+    left: calc(75% - 2.1875vh);
+    text-align: right;
+}
+
+.login-form{
+    position:relative;
+    margin: auto;
+    width: 50%;
+}
+
+/* On screens that are 600px or less, set the background color to olive */
+@media screen and (max-width: 600px) {
+    .pannel{
+        width: 90%;
+    }
+    .pannel-main{
+        margin-top: 0;
+        min-height: calc(90% - 32px - 48px);
+    }
+    .navbar{
+        margin-top: calc(4.375vh / 2);
+        height: 48px;
+    }
+    .top-nav-bar{
+        width: 90%;
+        position:relative;
+        left: calc(50% + (4.375vh / 4));
+        margin-bottom: 5px;
+    }
+    #top-nav-right{
+        left: calc(50% - (4.375vh / 4));
+        text-align: right;
+        margin-bottom: 0;
+    }
+    .book-surface{
+        width: calc(100% - 36px);
+        height: calc(25vw);
+        font-size: 1.5em;
+        color:black;
+        border-radius: 1em;
+        border-color: #556070;
+        background-color: #ffffff;
+        padding: auto;
+        margin: 16px;
+        text-align: center;
+    }
+    .login-form{
+        width: 100%;
+    }
+
+    h1{
+        font-size: 36px;
+    }
+    #new-novel-form{
+        margin-top: 64px;
+    }
+    textarea{
+        width: 90%;
+    }
+    .textview{
+        width: calc(90% - 20px);
+    }
+
+    div.book-surface-div{
+        width: calc(100% - 36px)
+    }
+    button.book-surface-btn{
+        width: calc(75% - 12px);
+        height: 100%;
+        margin-right: 5px;
+        margin-bottom: 0;
+        font-size: 0.7em;
+    }
+    button.delete-btn{
+        width: 25%;
+        height: 100%;
+        margin-bottom: 0;
+        font-size: 0.7em;
+    }
+    #load-novel-list{
+        margin-top: 32px;
+    }
+}
+
+a{
+    text-decoration-line: none;
+    color: black;
+}
