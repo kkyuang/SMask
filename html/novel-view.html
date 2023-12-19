@@ -8,12 +8,12 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link href="http://fonts.googleapis.com/earlyaccess/notosanskr.css" rel="stylesheet">
     <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
-    <title>ROLLING NOVELS</title>
-    <meta name="title" content="ROLLING NOVELS">
+    <title>${novel-title}</title>
+    <meta name="title" content="SMask">
     <meta name="author" content="뀨앙지윤">
     <link rel="stylesheet" href="/css/style.css">
-    <meta property="og:title" content="ROLLING NOVELS" />
-    <meta property="og:description" content="여러분이 가꾸어 나가는 소설, ROLLING NOVELS" />
+    <meta property="og:title" content="SMask" />
+    <meta property="og:description" content="함께 해결해 나가는 즐거움, SMask" />
     <script>
 
         function blankCheck(text, alertmsg) {
@@ -83,20 +83,9 @@
             }
 
             $("#add-btn").click(() => { //이어쓰기
-                location.href = '/novel/view/add/${novel-id}'
+                location.href = '/novel/${subject}/view/add/${novel-id}'
             })
             
-            //이어쓰기 작성중 알림
-            socket.on('writing${novel-id}', (data) => {
-                $('#add-btn').html(data + '님이 작성중입니다 :)')
-                $('#add-btn').prop('disabled', true)
-            })
-            
-            //이어쓰기 작성 종료 알림
-            socket.on('endwriting${novel-id}', (data) => {
-                $('#add-btn').html('이어쓰기 ✍️')
-                $('#add-btn').prop('disabled', false)
-            })
 
             function adjustHeight() {
                 var textEle = $('textarea.autosize');
@@ -127,7 +116,7 @@
                 class="autosize"><span class="can-drag">${novel-text}</span></div>
         </form>
 
-        <button id="add-btn" class="main-btn" style="margin-top: 5px; margin-bottom: 5px;">이어쓰기 ✍️</button>
+        <button id="add-btn" class="main-btn" style="margin-top: 5px; margin-bottom: 5px;">답하기 ✍️</button>
         <button id="stack-btn" class="main-btn" style="margin-top: 5px; margin-bottom: 5px;">토막 보기 👀</button>
 
         <div id="text-input" class="textview" style="text-align: left; min-height: 0;"><span class="can-drag"></span>${people-text}</span></div>

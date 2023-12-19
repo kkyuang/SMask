@@ -196,22 +196,49 @@ function toHTMLText(text){
 app.get('/', function(request, response) {
   var html = readHTML('main')
 
-  //소설 리스트
+  //과목 리스트
   var dirPath = './novels'
   var btnsText = ''
   var novelFileList = fs.readdirSync(dirPath)
   var novelList = []
   for(var i = 0; i < novelFileList.length; i++){
-    novelList[i] = JSON.parse(fs.readFileSync(dirPath + '/' + novelFileList[i]))
+    novelList[i] = novelFileList[i]
   }
   novelList.sort((a, b) => b.time - a.time)
   for(var i = 0; i < novelList.length; i++){
     btnsText += `
-    <button class="book-surface" onclick="location.href='/novel/view/${novelList[i].id}'"><span>${novelList[i].title}</span>
-    <span style="font-size: 0.6em;"><br>${getTermText(novelList[i].time)}</span></button>`
+    <button class="book-surface" onclick="location.href='/subject/${novelList[i]}'"><span>${novelList[i]}</span></button>`
   }
-  html = changeElements(html, [{'key': 'list-novels', 'value': btnsText}])
+  html = changeElements(html, [{'key': 'list-subjects', 'value': btnsText}])
 
+  response.send(topNavAddHTML(html, request))
+});
+
+//과목별
+app.get('/subject/:subject', function(request, response) {
+  var html = readHTML('subject')
+
+  //소설 리스트
+  var dirPath = './novels/' + request.params.subject + '/'
+
+  if(!fs.existsSync(dirPath)){
+    var html = readHTML('main') + '<script>alert("잘못된 접근입니다."); location.replace("/")</script>'
+  }
+  else{
+    var btnsText = ''
+    var novelFileList = fs.readdirSync(dirPath)
+    var novelList = []
+    for(var i = 0; i < novelFileList.length; i++){
+      novelList[i] = JSON.parse(fs.readFileSync(dirPath + '/' + novelFileList[i]))
+    }
+    novelList.sort((a, b) => b.time - a.time)
+    for(var i = 0; i < novelList.length; i++){
+      btnsText += `
+      <button class="book-surface" onclick="location.href='/novel/${request.params.subject}/view/${novelList[i].id}'"><span>${novelList[i].title}</span>
+      <span style="font-size: 0.6em;"><br>${getTermText(novelList[i].time)}</span></button>`
+    }
+    html = changeElements(html, [{'key': 'list-novels', 'value': btnsText}, {'key': 'subject', 'value': request.params.subject}])
+  }
   response.send(topNavAddHTML(html, request))
 });
 
@@ -229,55 +256,59 @@ app.get('/login', function(request, response) {
 });
 
 //새로운 소설 작성
-app.get('/novel/new', function(request, response) {
+app.get('/novel/:subject/new', function(request, response) {
   if(request.session.logined == true){
     var html = readHTML('new-novel')
   }
   else{
     var html = readHTML('main') + '<script>alert("소설 작성은 로그인 후 이용 가능합니다."); location.replace("/")</script>'
   }
-  html = changeElements(html, [{'key': 'title-input', 'value': ''}, {'key': 'text-input', 'value': ''}])
+  html = changeElements(html, [{'key': 'title-input', 'value': ''}, {'key': 'text-input', 'value': ''}, {'key': 'subject', 'value': request.params.subject}])
   response.send(topNavAddHTML(html, request))
 });
 
 //소설 이어쓰기
-app.get('/novel/view/add/:id', function(request, response) {
-  novelFilePath = './novels/' + request.params['id'] + '.json'
-  if(isWritingCH[request.params.id].isWriting == false){
+app.get('/novel/:subject/view/add/:id', function(request, response) {
+  novelFilePath = './novels/' + request.params.subject + '/' + request.params['id'] + '.json'
+  //if(Object.keys(isWritingCH).indexOf(request.params.id) == -1){
+  //  isWritingCH[request.params.id] = {'isWriting':false}
+  //}
     if(fs.existsSync(novelFilePath)){ //파일이 있는가?
       if(request.session.logined == true){
         var html = readHTML('add-novel')
         var novelFile = JSON.parse(fs.readFileSync(novelFilePath)) //파일 열기
-        var novelText = '...' + toHTMLText(novelFile.paragraph[novelFile.paragraph.length - 1].history[novelFile.paragraph[novelFile.paragraph.length - 1].history.length - 1].text)
+        var novelText = toHTMLText(novelFile.paragraph[novelFile.paragraph.length - 1].history[0].text)
         var novelTitle = novelFile.title
         html = changeElements(html, [{'key': 'novel-id', 'value': request.params.id}, {'key': 'novel-title', 'value': novelTitle}, {'key': 'novel-text', 'value': novelText},
-      {'key': 'text-input', 'value': ''}])
+      {'key': 'text-input', 'value': ''},{'key': 'subject', 'value': request.params.subject}])
       }
       else{
-        var html = readHTML('novel-view') + `<script>alert("소설 이어쓰기는 로그인 후 이용 가능합니다."); location.replace("/novel/view/${request.params['id']}")</script>`
+        var html = readHTML('novel-view') + `<script>alert("질문에 답하기는 로그인 후 이용 가능합니다."); location.replace("/novel/${request.params.subject}/view/${request.params['id']}")</script>`
       }
     }
     else{
-      var html = readHTML('main') + '<script>alert("잘못된 접근입니다."); location.replace("/")</script>'
+      var html = readHTML('main') + '<script>alert("잘못된 접근입니다. 파일 없음."); location.replace("/")</script>'
     }
-  }
-  else{
-    var html = readHTML('main') + '<script>alert("잘못된 접근입니다."); location.replace("/")</script>'
-  }
   response.send(topNavAddHTML(html, request))
 });
 
 //소설 보기
-app.get('/novel/view/:id', function(request, response) {
+app.get('/novel/:subject/view/:id', function(request, response) {
   //파일 경로
-  novelFilePath = './novels/' + request.params['id'] + '.json'
+  novelFilePath = './novels/' + request.params.subject + '/' + request.params['id'] + '.json'
   console.log(novelFilePath)
   if(fs.existsSync(novelFilePath)){ //파일이 있는가?
     var html = readHTML('novel-view') //html 불러오기
     var novelFile = JSON.parse(fs.readFileSync(novelFilePath)) //파일 열기
-    var paragraphText = ''
+    var paragraphText = '<br>────────────────────────<br><br>'
     for(var i = 0; i < novelFile.paragraph.length; i++){
-      paragraphText += toHTMLText(novelFile.paragraph[i].history[novelFile.paragraph[i].history.length - 1].text) + (i == novelFile.paragraph.length - 1 ? '' : '<br>')
+      if(i == 0){
+        paragraphText += "<span style='font-size:2em'>질문</span><br><br>"
+      }
+      else{
+        paragraphText += "<span style='font-size:2em'>답변" + i + "</span><br><br>"
+      }
+      paragraphText += toHTMLText(novelFile.paragraph[i].history[novelFile.paragraph[i].history.length - 1].text) + '<br><br>────────────────────────<br><br>'
     }
 
     var peopleList = []
@@ -286,9 +317,9 @@ app.get('/novel/view/:id', function(request, response) {
         peopleList[peopleList.length] = toHTMLText(novelFile.paragraph[i].author)
       }
     }
-    var peopleText = '생성자: ' + novelFile.author + '<br>기여자: ' + peopleList.join(', ');
+    var peopleText = '질문자: ' + novelFile.author + '<br>답변자: ' + peopleList.join(', ');
 
-    html = changeElements(html, [{'key': 'novel-title', 'value': novelFile.title}, {'key': 'novel-text', 'value': paragraphText}, {'key': 'novel-id', 'value': novelFile.id}, {'key': 'people-text', 'value': peopleText}])
+    html = changeElements(html, [{'key': 'novel-title', 'value': novelFile.title}, {'key': 'novel-text', 'value': paragraphText}, {'key': 'novel-id', 'value': novelFile.id}, {'key': 'people-text', 'value': peopleText}, {'key': 'subject', 'value': request.params.subject}])
   }
   else{
     var html = readHTML('main') + '<script>alert("잘못된 접근입니다."); location.replace("/")</script>'
@@ -298,22 +329,22 @@ app.get('/novel/view/:id', function(request, response) {
 
 
 //저장 안하고 불러오기(뒤로가기 위함)
-app.post("/novel/load", function(request,res,next){
-  request.session.tempSaveValue = {title: '', text:''}
+app.post("/novel/:subject/load", function(request,res,next){
+  request.session.tempSaveValue = {title: '', text:'', subject:request.params.subject}
   request.session.tempSaveValue.title = request.body.novelTitle
   request.session.tempSaveValue.text = request.body.novelText
-  res.redirect('/novel/load');
+  res.redirect('/novel/' + request.params.subject + 'load');
 })
 
 //저장 안하고 임시저장 불러오기(뒤로가기 위함)
-app.post("/novel/add/load/:num", function(request,res,next){
-  request.session['tempSaveAddValue' + request.params.num] = {title: '', text:''}
+app.post("/novel/:subject/add/load/:num", function(request,res,next){
+  request.session['tempSaveAddValue' + request.params.num] = {title: '', text:'', subject:request.params.subject}
   request.session['tempSaveAddValue' + request.params.num].text = request.body.novelText
-  res.redirect('/novel/view/add/load/' + request.params.num);
+  res.redirect('/novel/' + request.params.subject + 'view/add/load/' + request.params.num);
 })
 
 //임시저장 불러오기
-app.get('/novel/load', function(request, response) {
+app.get('/novel/:subject/load', function(request, response) {
   if(request.session.logined == true){
     var html = readHTML('load-novel')
   }
@@ -326,23 +357,23 @@ app.get('/novel/load', function(request, response) {
   for(var i = tempSaveArr.length - 1; i >= 0; i--){
     btnsText += `
     <div class="book-surface-div" >
-        <button class="book-surface-btn" onclick="location.href='/novel/load/${i}'"><span>${tempSaveArr[i].title}</span>
+        <button class="book-surface-btn" onclick="location.href='/novel/${request.params.subject}/load/${i}'"><span>${tempSaveArr[i].title}</span>
         <span style="font-size: 0.6em;"><br>${getTermText(tempSaveArr[i].time)}</span></button>
         <button class="delete-btn" onclick="delete1(${i})">DELETE</button>
     </div>`
   }
-  html = changeElements(html, [{'key': 'lastNum', 'value': tempSaveArr.length - 1}, {'key': 'list', 'value': btnsText}])
+  html = changeElements(html, [{'key': 'lastNum', 'value': tempSaveArr.length - 1}, {'key': 'list', 'value': btnsText}, {'key': 'subject', 'value': request.params.subject}])
   response.send(topNavAddHTML(html, request))
 });
 
 
 //이어쓰기 임시저장 불러오기
-app.get('/novel/view/add/load/:num', function(request, response) {
+app.get('/novel/:subject/view/add/load/:num', function(request, response) {
   if(request.session.logined == true){
     var html = readHTML('add-load-novel')
   }
   else{
-    var html = readHTML('main') + '<script>alert("이어쓰기 임시저장 불러오기는 로그인 후 이용 가능합니다."); location.replace("/")</script>'
+    var html = readHTML('main') + '<script>alert("답변 임시저장 불러오기는 로그인 후 이용 가능합니다."); location.replace("/")</script>'
   }
 
   var dirPath = './users/' + request.session.user_id + '/novels'
@@ -357,21 +388,21 @@ app.get('/novel/view/add/load/:num', function(request, response) {
     for(var i = tempSaveArr.length - 1; i >= 0; i--){
       btnsText += `
       <div class="book-surface-div" >
-          <button class="book-surface-btn" onclick="location.href='/novel/view/load/add/${request.params.num}/${i}'"><span>${tempSaveArr[i].text.substr(0, 10) + '...'}</span>
+          <button class="book-surface-btn" onclick="location.href='/novel/${request.params.subject}/view/load/add/${request.params.num}/${i}'"><span>${tempSaveArr[i].text.substr(0, 10) + '...'}</span>
           <span style="font-size: 0.6em;"><br>${getTermText(tempSaveArr[i].time)}</span></button>
           <button class="delete-btn" onclick="delete1(${i})">DELETE</button>
       </div>`
     }
   }
-  html = changeElements(html, [{'key': 'novel-id', 'value': request.params.num}, {'key': 'list', 'value': btnsText}])
+  html = changeElements(html, [{'key': 'novel-id', 'value': request.params.num}, {'key': 'list', 'value': btnsText}, {'key': 'subject', 'value': request.params.subject}])
   response.send(topNavAddHTML(html, request))
 });
 
 
 //임시저장 삭제
-app.get('/novel/load/del/:num', function(request, response) {
+app.get('/novel/:subject/load/del/:num', function(request, response) {
   if(request.session.logined == true){
-    var html = readHTML('load-novel') + '<script>alert("삭제되었습니다."); location.replace("/novel/load")</script>'
+    var html = readHTML('load-novel') + '<script>alert("삭제되었습니다."); location.replace("/novel/' + request.params.subject + 'load")</script>'
   }
   else{
     var html = readHTML('main') + '<script>alert("임시저장 삭제하기는 로그인 후 이용 가능합니다."); location.replace("/")</script>'
@@ -391,20 +422,20 @@ app.get('/novel/load/del/:num', function(request, response) {
   for(var i = tempSaveArr.length - 1; i >= 0; i--){
     btnsText += `
     <div class="book-surface-div" >
-        <button class="book-surface-btn" onclick="location.href='/novel/load/${i}'"><span>${tempSaveArr[i].title}</span>
+        <button class="book-surface-btn" onclick="location.href='/novel/${request.params.subject}/load/${i}'"><span>${tempSaveArr[i].title}</span>
         <span style="font-size: 0.6em;"><br>${getTermText(tempSaveArr[i].time)}</span></button>
         <button class="delete-btn" onclick="delete1(${i})">DELETE</button>
     </div>`
   }
-  html = changeElements(html, [{'key': 'lastNum', 'value': -1}, {'key': 'list', 'value': btnsText}])
+  html = changeElements(html, [{'key': 'lastNum', 'value': -1}, {'key': 'list', 'value': btnsText}, {'key': 'subject', 'value': request.params.subject}])
   response.send(topNavAddHTML(html, request))
 });
 
 
 //이어쓰기 임시저장 삭제
-app.get('/novel/add/load/del/:id/:num', function(request, response) {
+app.get('/novel/:subject/add/load/del/:id/:num', function(request, response) {
   if(request.session.logined == true){
-    var html = readHTML('load-novel') + `<script>alert("삭제되었습니다."); location.replace("/novel/view/add/load/${request.params.id}")</script>`
+    var html = readHTML('load-novel') + `<script>alert("삭제되었습니다."); location.replace("/novel/${request.params.subject}/view/add/load/${request.params.id}")</script>`
   }
   else{
     var html = readHTML('main') + '<script>alert("이어쓰기 임시저장 삭제하기는 로그인 후 이용 가능합니다."); location.replace("/")</script>'
@@ -430,18 +461,18 @@ app.get('/novel/add/load/del/:id/:num', function(request, response) {
   for(var i = tempSaveArr.length - 1; i >= 0; i--){
     btnsText += `
     <div class="book-surface-div" >
-        <button class="book-surface-btn" onclick="location.href='/novel/view/load/add/${request.params.id}/${i}'"><span>${tempSaveArr[i].text.substr(0, 10) + '...'}</span>
+        <button class="book-surface-btn" onclick="location.href='/novel/${request.params.subject}/view/load/add/${request.params.id}/${i}'"><span>${tempSaveArr[i].text.substr(0, 10) + '...'}</span>
         <span style="font-size: 0.6em;"><br>${getTermText(tempSaveArr[i].time)}</span></button>
         <button class="delete-btn" onclick="delete1(${i})">DELETE</button>
     </div>`
   }
-  html = changeElements(html, [{'key': 'novel-id', 'value': request.params.num}, {'key': 'lastNum', 'value': -1}, {'key': 'list', 'value': btnsText}])
+  html = changeElements(html, [{'key': 'novel-id', 'value': request.params.num}, {'key': 'lastNum', 'value': -1}, {'key': 'list', 'value': btnsText}, {'key': 'subject', 'value': request.params.subject}])
   response.send(topNavAddHTML(html, request))
 });
 
 
 //임시저장 열기
-app.get('/novel/load/:num', function(request, response) {
+app.get('/novel/:subject/load/:num', function(request, response) {
   if(request.session.logined == true){
     var html = readHTML('new-novel')
   }
@@ -449,24 +480,24 @@ app.get('/novel/load/:num', function(request, response) {
     var html = readHTML('main') + '<script>alert("임시저장 불러오기는 로그인 후 이용 가능합니다."); location.replace("/")</script>'
   }
   if(request.params.num == 'getback'){
-    html = changeElements(html, [{'key': 'title-input', 'value': request.session.tempSaveValue.title}, {'key': 'text-input', 'value': request.session.tempSaveValue.text}])
+    html = changeElements(html, [{'key': 'title-input', 'value': request.session.tempSaveValue.title}, {'key': 'text-input', 'value': request.session.tempSaveValue.text}, {'key': 'subject', 'value': request.params.subject}])
   }
   else{
     var filePath = './users/' + request.session.user_id + '/tempSave.json'
     var tempSaveArr = JSON.parse(fs.readFileSync(filePath))
   
     if(request.params.num != -1){
-      html = changeElements(html, [{'key': 'title-input', 'value': tempSaveArr[request.params.num].title}, {'key': 'text-input', 'value': tempSaveArr[request.params.num].text}])
+      html = changeElements(html, [{'key': 'title-input', 'value': tempSaveArr[request.params.num].title}, {'key': 'text-input', 'value': tempSaveArr[request.params.num].text}, {'key': 'subject', 'value': request.params.subject}])
     }
     else{
-      html = changeElements(html, [{'key': 'title-input', 'value': ''}, {'key': 'text-input', 'value': ''}])
+      html = changeElements(html, [{'key': 'title-input', 'value': ''}, {'key': 'text-input', 'value': ''}, {'key': 'subject', 'value': request.params.subject}])
     }
   }
   response.send(topNavAddHTML(html, request))
 });
 
 //이어쓰기 임시저장 열기
-app.get('/novel/view/load/add/:id/:num', function(request, response) {
+app.get('/novel/:subject/view/load/add/:id/:num', function(request, response) {
   if(request.session.logined == true){
     var html = readHTML('add-novel')
   }
@@ -474,146 +505,29 @@ app.get('/novel/view/load/add/:id/:num', function(request, response) {
     var html = readHTML('main') + '<script>alert("이어쓰기 임시저장 불러오기는 로그인 후 이용 가능합니다."); location.replace("/")</script>'
   }
   if(request.params.num == 'getback'){
-    html = changeElements(html, [{'key': 'text-input', 'value': request.session['tempSaveAddValue' + request.params.id].text}])
+    html = changeElements(html, [{'key': 'text-input', 'value': request.session['tempSaveAddValue' + request.params.id].text}, {'key': 'subject', 'value': request.params.subject}])
   }
   else{
     var filePath = './users/' + request.session.user_id + '/novels/' + request.params.id + '.json'
     var tempSaveArr = JSON.parse(fs.readFileSync(filePath))
   
     if(request.params.num != -1){
-      html = changeElements(html, [{'key': 'title-input', 'value': tempSaveArr[request.params.num].title}, {'key': 'text-input', 'value': tempSaveArr[request.params.num].text}])
+      html = changeElements(html, [{'key': 'title-input', 'value': tempSaveArr[request.params.num].title}, {'key': 'text-input', 'value': tempSaveArr[request.params.num].text}, {'key': 'subject', 'value': request.params.subject}])
     }
     else{
-      html = changeElements(html, [{'key': 'title-input', 'value': ''}, {'key': 'text-input', 'value': ''}])
+      html = changeElements(html, [{'key': 'title-input', 'value': ''}, {'key': 'text-input', 'value': ''}, {'key': 'subject', 'value': request.params.subject}])
     }
   }
 
-  novelFilePath = './novels/' + request.params['id'] + '.json'
+  novelFilePath = './novels/' + request.params.subject + '/' + request.params['id'] + '.json'
   var novelFile = JSON.parse(fs.readFileSync(novelFilePath)) //파일 열기
   var novelText = '...' + toHTMLText(novelFile.paragraph[novelFile.paragraph.length - 1].history[novelFile.paragraph[novelFile.paragraph.length - 1].history.length - 1].text)
   var novelTitle = novelFile.title
   html = changeElements(html, [{'key': 'novel-id', 'value': request.params.id},
-  {'key': 'novel-title', 'value': novelTitle}, {'key': 'novel-text', 'value': novelText}])
+  {'key': 'novel-title', 'value': novelTitle}, {'key': 'novel-text', 'value': novelText}, {'key': 'subject', 'value': request.params.subject}])
   response.send(topNavAddHTML(html, request))
 });
 
-//객관식 모드
-app.get('/choice-prepare', function(request, response) {
-  if(request.session.logined == true){
-    //초기 설정
-    uid = request.session.user_id
-    newChoice(uid)
-    var html = readHTML('choice-prepare').replace('로그인하지 않음', request.session.user_id)
-  }
-  else{
-    var html = readHTML('choice-prepare') + '<script>alert("먼저 로그인 해 주세요"); location.replace("/")</script>'
-  }
-  response.send(html)
-});
-
-//객관식 모드
-app.get('/choice/:num', function(request, response) {
-  if(request.session.logined == true){
-    //초기 설정
-    uid = request.session.user_id
-    newChoice(uid)
-    var stageName = ((request.params.num * 1) + 1)
-
-    isNormal = true
-    reviewVariable = ''
-    if(request.params.num == 'review'){
-      stageName = '틀린 문제 복습'
-      reviewVariable = 'var isReview = true'
-      if(fs.existsSync(`users/${uid}/choice/review.json`)){
-        if(JSON.parse(fs.readFileSync(`users/${uid}/choice/review.json`, 'utf-8')).length == 0){
-          var html = readHTML('choice') + `<script>alert("틀린 문제를 모두 복습했습니다 :)"); location.replace("/choice-prepare")</script>`
-          isNormal = false
-        }
-      }
-      else{
-        isNormal = false
-        var html = readHTML('choice') + `<script>alert("먼저 객관식 파트를 학습해 주세요"); location.replace("/choice-prepare") </script>`
-      }
-    }
-    else{
-      reviewVariable = 'var isReview = false'
-    }
-
-    if(isNormal){
-      var html = readHTML('choice').replace('${num}', stageName) + `<script>var words=${fs.readFileSync(`users/${uid}/choice/${request.params.num}.json`, 'utf-8')}; var myname = '${request.session.user_id}'; ${reviewVariable};</script>`
-    }
-  }
-  else{
-    var html = readHTML('choice') + '<script>alert("먼저 로그인 해 주세요"); location.replace("/")</script>'
-  }
-  response.send(html)
-});
-
-//주관식 모드
-app.get('/question-prepare', function(request, response) {
-  if(request.session.logined == true){
-    //초기 설정
-    uid = request.session.user_id
-    newChoice(uid)
-    var html = readHTML('question-prepare').replace('로그인하지 않음', request.session.user_id)
-  }
-  else{
-    var html = readHTML('question-prepare') + '<script>alert("먼저 로그인 해 주세요"); location.replace("/")</script>'
-  }
-  response.send(html)
-});
-
-//주관식 모드
-app.get('/question/:num', function(request, response) {
-  if(request.session.logined == true){
-    //초기 설정
-    uid = request.session.user_id
-    newChoice(uid)
-    var stageName = ((request.params.num * 1) + 1)
-
-    isNormal = true
-    reviewVariable = ''
-    if(request.params.num == 'review'){
-      stageName = '틀린 문제 복습'
-      reviewVariable = 'var isReview = true'
-      if(!fs.existsSync(`users/${uid}/question`)){
-        fs.mkdirSync(`users/${uid}/question`)
-      }
-      if(fs.existsSync(`users/${uid}/question/review.json`)){
-        if(JSON.parse(fs.readFileSync(`users/${uid}/question/review.json`, 'utf-8')).length == 0){
-          var html = readHTML('question') + `<script>alert("틀린 문제를 모두 복습했습니다 :)"); location.replace("/question-prepare")</script>`
-          isNormal = false
-        }
-      }
-      else{
-        isNormal = false
-        var html = readHTML('question') + `<script>alert("먼저 주관식 파트를 학습해 주세요"); location.replace("/question-prepare") </script>`
-      }
-    }
-    else{
-      reviewVariable = 'var isReview = false'
-    }
-
-    if(isNormal){
-      var path = 'choice'
-      if(request.params.num == 'review'){
-        path = 'question'
-      }
-      var html = readHTML('question').replace('${num}', stageName) + `<script>var words=${fs.readFileSync(`users/${uid}/${path}/${request.params.num}.json`, 'utf-8')}; var myname = '${request.session.user_id}'; ${reviewVariable};</script>`
-    }
-  }
-  else{
-    var html = readHTML('question') + '<script>alert("먼저 로그인 해 주세요"); location.replace("/")</script>'
-  }
-  response.send(html)
-});
-
-
-//랭킹
-app.get('/rank', function(request, response) {
-  var html = readHTML('rank')
-  response.send(html)
-});
 
 //채팅 서비스 이용
 app.get('/chat', function(request, response) {
@@ -665,16 +579,16 @@ app.post("/login", function(req,res,next){
 })
 
 //등록
-app.post("/novel/new", function(request,res,next){
+app.post("/novel/:subject/new", function(request,res,next){
   //변수입수
   var body = request.body;
   var title = body.novelTitle;
   var text = body.novelText;
   //현재 소설 개수
-  nowNum = fs.readdirSync('./novels').length
+  nowNum = fs.readdirSync('./novels/' + request.params.subject).length
 
   //파일경로 
-  var filePath = './novels/' + nowNum + '.json'
+  var filePath = './novels/' + request.params.subject + '/' + nowNum + '.json'
   //새 소설 json
   var saveObj = {
     id: nowNum,
@@ -700,18 +614,18 @@ app.post("/novel/new", function(request,res,next){
   if(!fs.existsSync(filePath)){
     fs.writeFileSync(filePath, JSON.stringify(saveObj))
   }
-  res.redirect('/');
+  res.redirect('/subject' + request.params.subject);
 })
 
 //이어쓰기 등록
-app.post("/novel/view/add/:id", function(request,res,next){
+app.post("/novel/:subject/view/add/:id", function(request,res,next){
   //변수입수
   var body = request.body;
   var text = body.novelText;
   //현재 소설 개수
-  nowNum = fs.readdirSync('./novels').length
+  nowNum = fs.readdirSync('./novels/' + request.params.subject).length
 
-  var filePath = './novels/' + request.params.id + '.json'
+  var filePath = './novels/'+ request.params.subject + '/' + request.params.id + '.json'
   var tempSaveArr = JSON.parse(fs.readFileSync(filePath))
 
   //새 paragraph JSON
@@ -733,7 +647,7 @@ app.post("/novel/view/add/:id", function(request,res,next){
   console.log(tempSaveArr)
   console.log(filePath)
   fs.writeFileSync(filePath, JSON.stringify(tempSaveArr))
-  res.redirect('/novel/view/' + request.params.id);
+  res.redirect('/novel/' + request.params.subject + '/view/' + request.params.id);
 })
 
 //임시 저장
@@ -810,37 +724,6 @@ io.on('connection', (socket) => {
 
   socket.on('name-cookie', (data) =>{ //닉네임 쿠키 저장
     //socket.cookie('nickname', data)
-  })
-
-  socket.on('writing', (data) =>{ //이어쓰기 진행중
-    if(isWritingCH[data] == undefined){
-      isWritingCH[data] = {
-        isWriting: false,
-        time: + new Date(),
-        author: socket.request.session.user_id
-      }
-    }
-    if(isWritingCH[data].isWriting != true){
-      io.emit('writing' + data, socket.request.session.user_id)
-      console.log('start ' + data)
-    }
-    isWritingCH[data] = {
-      isWriting: true,
-      time: + new Date(),
-      author: socket.request.session.user_id,
-    }
-    
-    setTimeout(() => {
-      if((+ new Date()) - isWritingCH[data].time > 500){
-        isWritingCH[data] = {
-          isWriting: false,
-          time: + new Date(),
-          author: socket.request.session.user_id
-        }
-        io.emit('endwriting' + data, socket.request.session.user_id)
-        console.log('end ' + data)
-      }
-    }, 1000);
   })
 
   socket.on('save', (data)=>{ //임시저장

@@ -60,10 +60,11 @@
 <body class="no-drag">
     ${top-nav-bar}
     <div id="main-div" class="pannel-main">
-        <h1 class="title" style="display: block; height: 48px; margin-top: 0; margin-bottom: 0; font-family: 'Apple Garamond Light', serif; font-weight:lighter;">SMask</h1>
+        <h1 class="title" style="display: block; height: 48px; margin-top: 0; margin-bottom: 0; font-family: 'Apple Garamond Light', serif; font-weight:lighter;">${subject}</h1>
         <!--<img id="main-img" src="img/main-img.png" alt="메인 이미지">-->
         <div class="book-list">
-            ${list-subjects}
+            <button class="book-surface" id="book-add-btn" onclick="location.href='/novel/${subject}/new'">+</button>
+            ${list-novels}
         </div>
     </div>
 </body>

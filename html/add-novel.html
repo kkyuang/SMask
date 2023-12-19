@@ -96,7 +96,7 @@
                         alert('임시저장 되었습니다 :)')
                     }
                 }
-                $("#new-novel-form").attr("action", "/novel/add/load/${novel-id}").submit()
+                $("#new-novel-form").attr("action", "/novel/${subject}/add/load/${novel-id}").submit()
             })
             $("#save-btn").click(() => { //임시저장
                 if (blankCheck($('#text-input').val(), '내용을 입력해 주세요')) {
@@ -110,7 +110,7 @@
             $("#upload-btn").click(() => { //등록(HTTP)
 
                 if (blankCheck($('#text-input').val(), '내용을 입력해 주세요')) {
-                    $("#new-novel-form").attr("action", "/novel/view/add/${novel-id}").submit()
+                    $("#new-novel-form").attr("action", "/novel/${subject}/view/add/${novel-id}").submit()
                 }
             })
 
