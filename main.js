@@ -782,6 +782,6 @@ app.get('/js/:name', function(request, response) {
 });
 
 //폰트 라우팅
-server.listen(80, function() {
+server.listen(8080, function() {
   console.log('Example app listening on port 3000!')
 });
